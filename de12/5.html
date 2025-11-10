@@ -1,0 +1,222 @@
+<html lang="jp">
+<head>
+    <!-- ⑥↓タイトルを変えてみよう -->
+    <title>しのしの 第5回</title>
+    <!-- ⑤スタイルシートの設定をしよう -->
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <h1>MAGIシステムを再現したい</h1>
+    <!-- 塊ごとにdivタグで区切るようにしましょう。 -->
+    <div>
+         <!-- ①↓に文字を書いてみよう -->
+<h2>目次</h2>
+<ul>
+    <li>MAGIシステムとは</li>
+    <li>コード案その1  3つのAIを同時に利用できるか</li>
+    <li>失敗と原因</li>       
+    <li>コード案その2  1つで再挑戦&工夫</li>
+    <li>感想</li>
+</ul>
+
+<h2>1.MAGIシステムとは</h2>
+新世紀エヴァンゲリオンに登場するスーパーコンピューターシステム。<br>
+「メルキオール（MELCHIOR）」・「バルタザール（BALTHASAR）」・「カスパー（CASPER）」 という3つの独立したシステムによる合議制が構築されており、<br>
+通常のコンピューターには出来ない人間が有するジレンマを再現している。<br>
+<a href="https://dic.pixiv.net/a/MAGI" target="_blank">pixiv百科事典より</a><br><br>
+⇒これを現代のAIで再現できないだろうか
+
+
+<h2>コード案その1  3つのAIを同時に利用できるか</h2>
+ChatGPT、Gemini、Groqの3つのAIのAPIを取得してそれぞれ思考を「理性」「感情」「情報処理」に役割分担し、<br>
+総合した判断をChatGPTに回答してもらうようにした。<br>
+
+<h3>ソースコード</h3>
+<pre><code>
+from openai import OpenAI
+from groq import Groq
+from google.generativeai import GenerativeModel, configure as genai_config
+from dotenv import load_dotenv
+import os
+
+# --- .env読み込み ---
+load_dotenv()
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+
+# --- クライアント設定 ---
+client_openai = OpenAI(api_key=OPENAI_API_KEY)
+genai_config(api_key=GOOGLE_API_KEY)
+gemini_model = GenerativeModel("models/gemini-2.5-pro-preview-06-05")
+client_groq = Groq(api_key=GROQ_API_KEY)
+
+# --- MAGI人格関数 ---
+def reason_ai(prompt):
+    """理性担当（Gemini）"""
+    return gemini_model.generate_content(prompt).text
+
+def emotion_ai(prompt):
+    """感情・倫理担当（ChatGPT）"""
+    response = client_openai.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": "あなたはMAGIの感情・倫理担当です。人間視点で判断や提案を加えてください。"},
+            {"role": "user", "content": prompt}
+        ]
+    )
+    return response.choices[0].message.content
+
+def navigator_ai(prompt):
+    """ナビ／情報生成担当（Groq）"""
+    response = client_groq.chat.completions.create(
+        model="llama-3.1-8b-instant",
+        messages=[
+            {"role": "system", "content": "あなたはMAGIのナビ／情報生成担当です。入力から新しい情報を生成してください。"},
+            {"role": "user", "content": prompt}
+        ]
+    )
+    return response.choices[0].message.content
+
+# --- MAGIフロー ---
+user_question = "新しい家族に犬を迎えるべきか？"
+
+# 1. 理性担当
+reason_output = reason_ai(f"論理的に分析してください: {user_question}")
+
+# 2. 感情・倫理担当
+emotion_output = emotion_ai(f"人間視点で考えて: {user_question}")
+
+# 3. ナビ／情報生成担当
+navigator_output = navigator_ai(f"犬を迎えるときの注意点や新情報を生成してください: {user_question}")
+
+# 4. 最終統合（ChatGPTでまとめる）
+integration_prompt = f"""
+以下はMAGIシステムの3人格の出力です。
+理性担当(Gemini): {reason_output}
+感情・倫理担当(ChatGPT): {emotion_output}
+ナビ・情報生成担当(Groq): {navigator_output}
+
+これらを総合して、ユーザーにわかりやすく、犬を迎えるべきかの提案をしてください。
+"""
+
+final_output = client_openai.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[
+        {"role": "system", "content": "あなたはMAGIシステム統合担当です。3人格の出力をまとめて最終回答を作ります。"},
+        {"role": "user", "content": integration_prompt}
+    ]
+)
+
+print("=== MAGI統合最終回答 ===")
+print(final_output.choices[0].message.content)
+</code></pre>
+
+<h2>失敗と原因</h2>
+APIは無料と言っても、無料枠を使い切れば制限がかかってしまうため実行できなくなった。<br>
+他のAIのAPIを探してみたが、使えそうな完全無料のAIのAPIはほとんど見つからなかった。<br>
+また出力する回答が長すぎるため、回答の表示に1分程時間がかかってしまった。<br>
+
+<h2>コード案その2  1つで再挑戦&工夫</h2>
+ChatGPT1つに3つの思考をそれぞれ回答してもらう。<br>
+また、原作再現で「科学者としての」「母としての」「女性としての」思考に変更。<br>
+そして、回答はそれぞれ5文で出力されるよう質問に加えた。<br>
+
+<h3>ソースコード</h3>
+<pre><code>
+import os
+from openai import OpenAI
+from dotenv import load_dotenv
+
+# ====== APIキーの読み込み ======
+load_dotenv()
+api_key = os.getenv("OPENAI_API_KEY")
+
+if not api_key:
+    raise ValueError("❌ OPENAI_API_KEY が設定されていません。 .env ファイルを確認してください。")
+
+client = OpenAI(api_key=api_key)
+
+# ====== 質問を入力 ======
+user_question = input("質問を入力してください：")
+
+# ====== 各役割の応答関数 ======
+def ask_role(role, question):
+    prompt = f"{role}になりきって5文以内で回答してください。\n質問: {question}"
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "user", "content": prompt}]
+    )
+    return response.choices[0].message.content.strip()
+
+# ====== 各担当AI ======
+scientist = ask_role("科学者", user_question)
+mother = ask_role("母親", user_question)
+woman = ask_role("女性", user_question)
+
+# ====== 統合AI（MAGI統合判断） ======
+def integrate_opinions(scientist, mother, woman, question):
+    prompt = f"""
+あなたはMAGIシステムの統合AIです。
+以下の3人の意見をもとに、バランスの取れた最終判断を5文以内で述べてください。
+
+質問: {question}
+
+--- 科学者の意見 ---
+{scientist}
+
+--- 母親の意見 ---
+{mother}
+
+--- 女性の意見 ---
+{woman}
+"""
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "user", "content": prompt}]
+    )
+    return response.choices[0].message.content.strip()
+
+integrated = integrate_opinions(scientist, mother, woman, user_question)
+
+# ====== 出力 ======
+print("\n====== MAGI SYSTEM ======")
+print(f"質問: {user_question}\n")
+print("--- 科学者担当 ---")
+print(scientist)
+print("\n--- 母担当 ---")
+print(mother)
+print("\n--- 女性担当 ---")
+print(woman)
+print("\n--- 統合AIの最終判断 ---")
+print(integrated)
+</code></pre>
+
+<h3>出力例</h3>
+<pre>
+====== MAGI SYSTEM ======
+質問: トロッコ問題です。あなたは、そのまま5人引かれるのを黙ってみるか、ポイントを切り替えて1人を犠牲にするか選んでください。
+
+--- 科学者担当 ---
+トロッコ問題は倫理的・哲学的なジレンマを示しています。私の役割としては、科学者として冷静にデータや理論に基づく判断を重視します。<br>
+この問題では、結果の数と影響を考慮すると、1人を犠牲にして5人を救う選択が合理的とされることが多いです。<br>
+ただし、その選択が感情や社会的信念と衝突することも理解しています。最終的には、選択の背後にある道徳的枠組みが重要です。
+
+--- 母担当 ---
+私は、トロッコ問題では1人を犠牲にする選択をします。何よりも大切なのは、5人の命を救うことです。<br>
+もちろん、1人を失うのはとても辛い決断ですが、母親として生きる道を選ぶことが必要だと思います。<br>
+子どもたちにこれを教え、最善を尽くす姿勢を示したいです。命の重みを真剣に考え、自分が選んだ道を貫きます。
+
+--- 女性担当 ---
+私の心には葛藤がありますが、やはり5人の命を救うために1人を犠牲にする選択をします。たとえその1人が知らない人でも、他の5人の未来を考えると決断が必要だと思います。<br>
+救える命が多い方を選ぶことで、少しでも多くの幸せを残せるかもしれません。ただ、その選択が正しいのかは、いつも心に引っかかります。命の重さは本当に計り知れないからです。       
+
+--- 統合AIの最終判断 ---
+トロッコ問題において、多くの意見が1人の犠牲を選ぶことを支持しているため、合理的な判断として5人を救う選択を支持します。<br>
+ただし、この決断は感情的葛藤や道徳的な問題を伴うものであり、その重みを忘れてはなりません。<br>
+最終的には、選択の背景にある倫理観や価値観を尊重しながら、慎重に考えることが重要です。
+</pre>
+
+<h2>感想</h2>
+契約的な問題があり、満足のいく再現にはならなかったが、それに近しいことがChatGPT単体で出来た。<br>
+更なる発展案として、多数決を取らせてみたり、重要な決断の時は全会一致が必要にするなど、いろいろ考えられそうだ。
