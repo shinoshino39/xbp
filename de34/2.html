@@ -1,0 +1,99 @@
+<html lang="jp">
+<head>
+    <!-- ⑥↓タイトルを変えてみよう -->
+    <title>しのしの 第2回 Arbuinoの基本</title>
+    <!-- ⑤スタイルシートの設定をしよう -->
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <h1>Arbuinoの基本　組み合わせて作ってみる</h1>
+    <!-- 塊ごとにdivタグで区切るようにしましょう。 -->
+    <div>
+    <h2>今回新たに使った機材の説明</h2>
+    <h3>ステッピングモーター</h3>
+    パルス信号（電気パルス）の数に同期して、一定の角度（ステップ）ずつ回転するモーター。パルス数で「回転角度・位置」、<br>
+    周波数で「回転速度」を正確に制御でき、高精度な位置決めが可能です。停止時にトルク（保持力）があるため、ブレーキなしで位置を保持できる特徴がある。<br>
+    <img src="./images/ステッピングモーター.jpeg" width="30%" ><br>
+    <h2>今回作ったモノ</h2>
+    <h3>光連動装置</h3>
+    <iframe width="560" height="315" src=" https://www.youtube-nocookie.com/embed/eN8u1RRY6HY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><br><br>
+
+    <h2>簡単なしくみの説明</h2>
+    明るさが300より明かるければモーター（扇風機）が回り、暗ければLEDが点灯する<br>
+
+    <h2>感想・反省点</h2>
+    ChatGPTを利用しながら実際の挙動とのズレを修正して動かせた。<br>
+    3Dプリンターを利用してみたかったが、時間がかかるので断念してしまった。<br>
+
+    <h2>コード</h2>
+    <pre><code>
+#include Adafruit_NeoPixel.h
+
+// モーター用
+const int DIR  = 8;
+const int STEP = 9;
+
+// NeoPixel用（ピン変更！）
+#define LED_PIN     6
+#define NUMPIXELS   5
+
+// 明るさセンサー
+const int CDS_PIN = A1;
+
+// しきい値（ここで明るい/暗いを判定）
+int threshold = 300;
+
+Adafruit_NeoPixel pixels(NUMPIXELS, LED_PIN, NEO_GRB + NEO_KHZ800);
+
+void setup() {
+  // モーター
+  pinMode(DIR, OUTPUT);
+  pinMode(STEP, OUTPUT);
+
+  // LED
+  pixels.begin();
+  pixels.setBrightness(50);
+
+  // シリアル（デバッグ用）
+  Serial.begin(9600);
+}
+
+void loop() {
+  int val = analogRead(CDS_PIN);
+  Serial.println(val);
+
+  if (val < threshold) {
+    // 明るい → モーター回転
+    pixels.clear();
+    pixels.show();
+
+    for (int i = 0; i < 360; i++) {
+      clockwise(800);
+    }
+
+  } else {
+    // 暗い → LED点灯
+    digitalWrite(STEP, LOW);
+
+    pixels.clear();
+    for (int i = 0; i < NUMPIXELS; i++) {
+      pixels.setPixelColor(i, pixels.Color(0, 0, 255)); // 青
+    }
+    pixels.show();
+  }
+
+  delay(0);
+}
+
+// モーター関数
+void clockwise(int delaytime) {
+  digitalWrite(DIR, HIGH);
+  digitalWrite(STEP, HIGH);
+  delayMicroseconds(delaytime);
+  digitalWrite(STEP, LOW);
+  delayMicroseconds(delaytime);
+}
+    </code></pre>
+</div>
+</body>
+</html>
