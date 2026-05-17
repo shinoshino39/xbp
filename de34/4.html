@@ -1,0 +1,88 @@
+<html lang="jp">
+
+<head>
+
+    <title>しのしの　PRICE QUIZ 制作紹介</title>
+
+    <link rel="stylesheet" href="./css/style.css">
+
+</head>
+
+<body>
+
+<h1>
+    PRICE QUIZ<br>
+    Flask × ChatGPTで制作した値段感覚クイズ
+</h1>
+
+<div>
+
+    <h2>PRICE QUIZとは</h2>
+
+    PRICE QUIZは、様々なものの値段を予想するクイズゲーム。<br>
+    新幹線の料金や家賃相場などを問題として出題し、<br>
+    プレイヤーの値段感覚を試すことができる。<br><br>
+
+    <h2>ChatGPTへの指示</h2>
+
+今回の制作では、ChatGPTを活用しながら<br>
+機能追加やエラー修正を行った。<br><br>
+
+・Flaskでいろんなものの値段をあてるクイズを作りたい<br>
+
+・クイズは1回5問にしたい<br>
+
+・問題はランダムで出題したい<br>
+
+・問題をあとから追加できるようにしたい<br>
+
+・値段の桁がバラバラなので、誤差を割合（％）で表示したい<br>
+
+・回答と正解の誤差を記録したい<br>
+
+・ゲームやテレビ番組風のUIにしたい<br>
+
+・回答後に「ピッタリ」「高すぎ」「安すぎ」などのリアクションを表示したい<br>
+
+・問題ごとの結果画面を作りたい<br>
+
+・最終結果画面で平均誤差率を表示したい<br>
+
+
+    <h2>アプリの仕組み</h2>
+
+    Flaskを利用してWebアプリとして動作している。<br><br>
+
+    questions.json に問題を保存し、<br>
+    Pythonでランダムに5問選択して表示する仕組みになっている。<br><br>
+
+    回答後は、正解との差額から誤差率を計算し、<br>
+    「ピッタリ」「高すぎ」「安すぎ」などのリアクションを表示する。<br><br>
+
+
+    <h2>動作動画</h2>
+
+    実際に動作している様子を動画で確認できる。<br><br>
+
+<iframe width="560" height="315" src=" https://www.youtube-nocookie.com/embed/csLAXpFrXRE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><br><br>
+    </iframe><br><br>
+
+
+    <h2>苦労した点</h2>
+
+    Flaskのファイル構成やテンプレートエラーの修正に苦戦した。<br>
+    特に、FileNotFoundError や Jinja2 のエラー対応に時間がかかった。<br><br>
+
+
+    <h2>感想</h2>
+
+    ChatGPTを活用することで、<br>
+    エラー修正や機能追加を効率的に行うことができた。<br>
+
+    一方で、コードの意味を理解しながら修正することの重要性も感じた。<br>
+
+</div>
+
+</body>
+
+</html>
