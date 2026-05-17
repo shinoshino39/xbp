@@ -1,0 +1,83 @@
+<html lang="jp">
+<head>
+    <title>しのしの　第3回　Flaskの基本</title>
+
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body>
+
+<h1>Flaskの基本<br>PythonでWebアプリを作る</h1>
+
+<div>
+
+    <h2>Flaskとは</h2>
+
+    Flaskは、PythonでWebアプリケーションを開発するための軽量なWebフレームワーク。<br>
+    シンプルな構造で学習しやすく、初心者でも扱いやすい特徴がある。<br>
+    小規模なWebサイトからWebアプリまで幅広く利用されている。<br><br>
+
+    <img src="./images/Flask_python.png" width="30%"><br><br>
+
+
+    <h2>バックエンドとフロントエンド</h2>
+
+    <h3>バックエンド</h3>
+
+    サーバー側で処理を行う部分。<br>
+    FlaskではPythonを使ってデータ処理やページの制御を行う。<br>
+    例えば、ログイン処理やデータベース操作などを担当する。<br><br>
+
+    <h3>フロントエンド</h3>
+
+    ユーザーが実際に見る画面部分。<br>
+    HTMLやCSS、JavaScriptを使ってデザインや画面表示を行う。<br>
+    FlaskではHTMLファイルを表示してWebページを作成する。<br><br>
+
+
+    <h2>Flaskのしくみ</h2>
+
+    ブラウザからアクセスがあると、FlaskがPythonで処理を行い、<br>
+    HTMLを返してWebページを表示する。<br><br>
+
+    ブラウザ → Flaskサーバー → Python処理 → HTML表示<br><br>
+
+
+    <h2>簡単なコード例</h2>
+
+<pre><code>
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return "Hello Flask!"
+
+app.run(debug=True)
+</code></pre>
+
+    <h2>コードの説明</h2>
+
+    @app.route("/") はトップページを指定している。<br>
+    return でブラウザに表示する内容を返している。<br>
+    app.run() を実行することでFlaskサーバーが起動する。<br><br>
+
+
+    <h2>Flaskのメリット</h2>
+
+    ・シンプルで理解しやすい<br>
+    ・PythonだけでWeb開発できる<br>
+    ・初心者でも学習しやすい<br>
+    ・小規模アプリを作りやすい<br><br>
+
+
+    <h2>感想</h2>
+
+    Flaskはコード量が少なく、初心者でもWebアプリを作りやすいと感じた。<br>
+    Pythonで画面表示までできる点が便利だった。<br>
+
+</div>
+
+</body>
+</html>
