@@ -51,6 +51,22 @@ h3{
     letter-spacing: 0.05em;
 }
 
+/* ===== ロゴ ===== */
+
+.logo{
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+}
+
+.logo img{
+    width: 80px;
+    max-width: none;
+    margin: 0;
+    border-radius: 0;
+}
+
 /* ===== 本文 ===== */
 
 div{
