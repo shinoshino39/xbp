@@ -90,6 +90,27 @@ img{
     border-radius: 16px;
 }
 
+/* ===== 制作画面 ===== */
+
+figure.app-screen{
+    max-width: 900px;
+    margin: 55px auto 80px;
+}
+
+figure.app-screen img{
+    max-width: 900px;
+    margin: 0 auto 18px;
+    border: 1px solid #d9dfe9;
+    box-shadow: 0 18px 45px rgba(17, 17, 17, 0.1);
+}
+
+figure.app-screen figcaption{
+    color: #555;
+    font-size: 16px;
+    line-height: 1.8;
+    text-align: center;
+}
+
 /* ===== iframe ===== */
 
 iframe{
@@ -159,6 +180,15 @@ a:hover{
 
     div{
         width: 90%;
+    }
+
+    figure.app-screen{
+        margin: 35px auto 55px;
+    }
+
+    figure.app-screen figcaption{
+        font-size: 14px;
+        text-align: left;
     }
 
     pre{
